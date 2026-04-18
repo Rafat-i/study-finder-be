@@ -1,0 +1,16 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  color: #183153;
+  background: #f7f9fc;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
