@@ -207,5 +207,5 @@ JWT_SECRET=your_jwt_secret_key
 
 The application is deployed on Render.
 
-- Backend: deployed as a Web Service
-- Frontend: deployed as a Static Site
+- Backend: https://study-finder-be.onrender.com
+- Frontend: https://study-finder-be-1.onrender.com
