@@ -12,6 +12,10 @@ export class JoinRequestService {
     return this.http.get<ApiResponse<{ joinRequests: JoinRequest[] }>>(`${environment.apiUrl}/join-requests`);
   }
 
+  getSentRequests() {
+    return this.http.get<ApiResponse<{ joinRequests: JoinRequest[] }>>(`${environment.apiUrl}/join-requests/sent`);
+  }
+
   createJoinRequest(payload: { sessionId: string; message?: string }) {
     return this.http.post<ApiResponse<{ joinRequest: JoinRequest }>>(`${environment.apiUrl}/join-requests`, payload);
   }

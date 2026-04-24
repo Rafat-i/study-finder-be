@@ -40,4 +40,27 @@ const emitRequestAccepted = (requesterUserId, joinRequest) => {
     });
 };
 
-module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted };
+const emitSessionCreated = (session) => {
+    if (!io) return;
+    io.emit("session:created", {
+        message: "A new study session was created!",
+        data: { session }
+    });
+};
+
+const emitSessionUpdated = (session) => {
+    if (!io) return;
+    io.emit("session:updated", {
+        message: "A session was updated!",
+        data: { session }
+    });
+};
+
+const emitSessionDeleted = (sessionId) => {
+    if (!io) return;
+    io.emit("session:deleted", {
+        data: { sessionId }
+    });
+};
+
+module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted, emitSessionCreated, emitSessionUpdated, emitSessionDeleted };

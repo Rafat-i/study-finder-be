@@ -1,4 +1,6 @@
 const StudySession = require("../models/StudySession");
+const JoinRequest = require("../models/JoinRequest");
+const { emitSessionCreated, emitSessionUpdated, emitSessionDeleted } = require("../socket");
 
 const createSession = async (req, res) => {
     try {
@@ -26,6 +28,7 @@ const createSession = async (req, res) => {
 
         const session = await StudySession.create(sessionData);
         const populated = await session.populate("createdBy", "-password");
+        emitSessionCreated(populated);
 
         return res.status(201).json({
             message: "Study session created successfully.",
@@ -113,6 +116,7 @@ const updateSession = async (req, res) => {
 
         await session.save();
         const populated = await session.populate("createdBy", "-password");
+        emitSessionUpdated(populated);
 
         return res.json({
             message: "Session updated successfully.",
@@ -136,7 +140,9 @@ const deleteSession = async (req, res) => {
             return res.status(403).json({ message: "Not authorized to delete this session." });
         }
 
+        await JoinRequest.deleteMany({ sessionId: session._id });
         await session.deleteOne();
+        emitSessionDeleted(String(session._id));
 
         return res.json({ message: "Session deleted successfully." });
     } catch (error) {

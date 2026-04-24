@@ -6,7 +6,14 @@ import { environment } from '../../environments/environment';
 export class RealtimeService {
   private socket: Socket | null = null;
 
-  connect(userId: string, onRequestReceived: () => void, onRequestAccepted: () => void): void {
+  connect(
+    userId: string,
+    onRequestReceived: () => void,
+    onRequestAccepted: () => void,
+    onSessionCreated: () => void,
+    onSessionUpdated: () => void,
+    onSessionDeleted: () => void
+  ): void {
     if (this.socket?.connected) return;
 
     this.socket = io(environment.apiUrl, {
@@ -19,11 +26,17 @@ export class RealtimeService {
 
     this.socket.on('request:received', onRequestReceived);
     this.socket.on('request:accepted', onRequestAccepted);
+    this.socket.on('session:created', onSessionCreated);
+    this.socket.on('session:updated', onSessionUpdated);
+    this.socket.on('session:deleted', onSessionDeleted);
   }
 
   disconnect(): void {
     this.socket?.off('request:received');
     this.socket?.off('request:accepted');
+    this.socket?.off('session:created');
+    this.socket?.off('session:updated');
+    this.socket?.off('session:deleted');
     this.socket?.disconnect();
   }
 }

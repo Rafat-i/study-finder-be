@@ -1,0 +1,57 @@
+<section class="auth-shell">
+  <div class="hero-card">
+    <p class="eyebrow">Study Finder</p>
+    <h1>Find your perfect study partner.</h1>
+    <p class="hero-copy">
+      Create study sessions, find classmates studying the same subjects, and send join requests! All in one place.
+    </p>
+    <div class="hero-points">
+      <span>Real-time alerts</span>
+      <span>Location based</span>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-header">
+      <p class="eyebrow">{{ mode() === 'login' ? 'Sign in' : 'Create account' }}</p>
+      <h2>{{ mode() === 'login' ? 'Access your dashboard' : 'Register a new account' }}</h2>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      @if (mode() === 'register') {
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" placeholder="Name" />
+        </label>
+      }
+
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="studyfinder@email.com" />
+      </label>
+
+      <label>
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="At least 6 characters" />
+      </label>
+
+      @if (errorMessage()) {
+        <p class="feedback error">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Processing...' : mode() === 'login' ? 'Sign in' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="switch-link">
+      @if (mode() === 'login') {
+        Don&apos;t have an account?
+        <a routerLink="/register">Create one now</a>
+      } @else {
+        Already registered?
+        <a routerLink="/login">Back to sign in</a>
+      }
+    </p>
+  </div>
+</section>

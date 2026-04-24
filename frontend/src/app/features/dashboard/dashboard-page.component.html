@@ -1,0 +1,222 @@
+<section class="dashboard-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Study Finder</p>
+      <h1>Hello, {{ currentUser()?.name }}</h1>
+      <p class="subtitle">Find and join study sessions near you.</p>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="ghost" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  @if (notification()) {
+    <div class="notification">{{ notification() }}</div>
+  }
+
+  @if (pageError()) {
+    <p class="feedback error">{{ pageError() }}</p>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-card">Loading...</div>
+  } @else {
+    <div class="dashboard-grid">
+
+      <article class="panel form-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">{{ isEditing ? 'Edit session' : 'New session' }}</p>
+            <h2>{{ isEditing ? 'Update session details' : 'Create a study session' }}</h2>
+          </div>
+          @if (isEditing) {
+            <button type="button" class="ghost" (click)="resetSessionForm()">Cancel</button>
+          }
+        </div>
+
+        <form [formGroup]="sessionForm" (ngSubmit)="submitSession()" class="session-form">
+          <label>
+            <span>Title</span>
+            <input type="text" formControlName="title" placeholder="Trends in Technology Study Group" />
+          </label>
+
+          <label>
+            <span>Subject</span>
+            <input type="text" formControlName="subject" placeholder="Angular" />
+          </label>
+
+          <div class="form-grid">
+            <label>
+              <span>Date</span>
+              <input type="datetime-local" formControlName="date" [min]="today" />
+            </label>
+
+            <label>
+              <span>Spots Available</span>
+              <input type="number" formControlName="spotsAvailable" min="1" />
+            </label>
+          </div>
+
+          <label>
+            <span>Location</span>
+            <input type="text" formControlName="location" placeholder="Library Room 3" />
+          </label>
+
+          <button type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Saving...' : isEditing ? 'Save changes' : 'Create session' }}
+          </button>
+        </form>
+      </article>
+
+      <article class="panel sessions-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Available sessions</p>
+            <h2>Study sessions near you</h2>
+          </div>
+          <div class="radius-filter">
+            <select (change)="onRadiusChange($event)">
+              <option value="any">Any distance</option>
+              <option value="1">Within 1 km</option>
+              <option value="5">Within 5 km</option>
+              <option value="10">Within 10 km</option>
+              <option value="25">Within 25 km</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="session-list">
+          @for (session of otherSessions(); track trackBySession($index, session)) {
+            <div class="session-card">
+              <div class="session-meta">
+                <span class="subject-tag">{{ session.subject }}</span>
+                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <h3>{{ session.title }}</h3>
+              <p class="session-location">{{ session.location }}</p>
+              @if (!isSessionPast(session)) {
+                <p class="session-spots">{{ session.spotsAvailable }} spot(s) available</p>
+              }
+              <p class="session-owner">Posted by {{ session.createdBy.name }}</p>
+              <div class="session-actions">
+                @if (getRequestStatus(session) === 'pending') {
+                  <span class="status-badge pending">Request pending</span>
+                } @else if (getRequestStatus(session) === 'accepted') {
+                  <span class="status-badge accepted">Joined</span>
+                } @else if (getRequestStatus(session) === 'declined') {
+                  <span class="status-badge declined">Request declined</span>
+                } @else if (isSessionPast(session)) {
+                  <span class="status-badge ended">Session ended</span>
+                } @else {
+                  <button type="button" class="secondary"
+                    (click)="requestForm.patchValue({ sessionId: session._id }); submitJoinRequest()">
+                    Request to join
+                  </button>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">No sessions available near you.</div>
+          }
+        </div>
+      </article>
+
+      <article class="panel my-sessions-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">My sessions</p>
+            <h2>Sessions you created</h2>
+          </div>
+        </div>
+
+        <div class="session-list">
+          @for (session of mySessions(); track trackBySession($index, session)) {
+            <div class="session-card">
+              <div class="session-meta">
+                <span class="subject-tag">{{ session.subject }}</span>
+                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <h3>{{ session.title }}</h3>
+              <p class="session-location">{{ session.location }}</p>
+              <p class="session-spots">{{ session.spotsAvailable }} spot(s) available</p>
+              <div class="session-actions">
+                <button type="button" class="ghost" (click)="editSession(session)">Edit</button>
+                <button type="button" class="danger" (click)="deleteSession(session)">Delete</button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">You have not created any sessions yet.</div>
+          }
+        </div>
+      </article>
+
+      <article class="panel requests-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Incoming requests</p>
+            <h2>People who want to join your sessions</h2>
+          </div>
+        </div>
+
+        <div class="request-list">
+          @for (request of incomingRequests(); track request._id) {
+            @if (request.sessionId && request.sessionId._id) {
+              <div class="request-card" [class.accepted]="request.status === 'accepted'" [class.declined]="request.status === 'declined'">
+                <p class="request-user">{{ request.userId.name }} <span class="request-email">({{ request.userId.email }})</span></p>
+                <p class="request-session">For: {{ request.sessionId.title }}</p>
+                @if (request.message) {
+                  <p class="request-message">"{{ request.message }}"</p>
+                }
+                <span class="status-badge" [class]="request.status">{{ request.status }}</span>
+                @if (request.status === 'pending') {
+                  <div class="request-actions">
+                    <button type="button" class="secondary" (click)="respondToRequest(request, 'accepted')">Accept</button>
+                    <button type="button" class="danger" (click)="respondToRequest(request, 'declined')">Decline</button>
+                  </div>
+                } @else {
+                  <div class="request-actions">
+                    <button type="button" class="ghost" (click)="deleteRequest(request)">Dismiss</button>
+                  </div>
+                }
+              </div>
+            }
+          } @empty {
+            <div class="empty-state">No incoming requests yet.</div>
+          }
+        </div>
+      </article>
+
+      <article class="panel sent-requests-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">My requests</p>
+            <h2>Sessions you requested to join</h2>
+          </div>
+        </div>
+
+        <div class="request-list">
+          @for (request of sentRequests(); track request._id) {
+            @if (request.sessionId && request.sessionId._id) {
+              <div class="request-card" [class.accepted]="request.status === 'accepted'" [class.declined]="request.status === 'declined'">
+                <h3 class="request-session-title">{{ request.sessionId.title }}</h3>
+                <p class="request-session">{{ request.sessionId.subject }} — {{ request.sessionId.location }}</p>
+                @if (request.message) {
+                  <p class="request-message">"{{ request.message }}"</p>
+                }
+                <span class="status-badge" [class]="request.status">{{ request.status }}</span>
+                @if (request.status === 'pending') {
+                  <div class="request-actions">
+                    <button type="button" class="danger" (click)="cancelRequest(request)">Cancel request</button>
+                  </div>
+                }
+              </div>
+            }
+          } @empty {
+            <div class="empty-state">You have not sent any join requests yet.</div>
+          }
+        </div>
+      </article>
+
+    </div>
+  }
+</section>
