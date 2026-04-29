@@ -106,7 +106,7 @@ export class AuthPageComponent {
             },
           });
       },
-      { timeout: 5000 }
+      { timeout: 2000 }
     );
   }
 }

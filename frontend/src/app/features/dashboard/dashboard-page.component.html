@@ -90,7 +90,7 @@
             <div class="session-card">
               <div class="session-meta">
                 <span class="subject-tag">{{ session.subject }}</span>
-                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' : 'UTC' }}</span>
               </div>
               <h3>{{ session.title }}</h3>
               <p class="session-location">{{ session.location }}</p>
@@ -134,7 +134,7 @@
             <div class="session-card">
               <div class="session-meta">
                 <span class="subject-tag">{{ session.subject }}</span>
-                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <span>{{ session.date | date: 'dd/MM/yyyy HH:mm' : 'UTC' }}</span>
               </div>
               <h3>{{ session.title }}</h3>
               <p class="session-location">{{ session.location }}</p>
