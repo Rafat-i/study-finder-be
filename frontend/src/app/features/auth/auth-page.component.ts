@@ -105,7 +105,8 @@ export class AuthPageComponent {
               this.errorMessage.set(error.error?.message ?? 'Could not sign in.');
             },
           });
-      }
+      },
+      { timeout: 5000 }
     );
   }
 }
