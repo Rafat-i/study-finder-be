@@ -1,6 +1,6 @@
 const JoinRequest = require("../models/JoinRequest");
 const StudySession = require("../models/StudySession");
-const { emitRequestReceived, emitRequestAccepted, emitSessionUpdated, emitRequestDeleted } = require("../socket");
+const { emitRequestReceived, emitRequestAccepted, emitRequestDeclined, emitSessionUpdated, emitRequestDeleted } = require("../socket");
 
 const createJoinRequest = async (req, res) => {
     try {
@@ -156,6 +156,8 @@ const updateJoinRequest = async (req, res) => {
 
         if (status === "accepted") {
             emitRequestAccepted(String(populated.userId._id), populated);
+        } else if (status === "declined") {
+            emitRequestDeclined(String(populated.userId._id), populated);
         }
 
         return res.json({

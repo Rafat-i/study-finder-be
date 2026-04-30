@@ -40,6 +40,14 @@ const emitRequestAccepted = (requesterUserId, joinRequest) => {
     });
 };
 
+const emitRequestDeclined = (requesterUserId, joinRequest) => {
+    if (!io) return;
+    io.to(requesterUserId).emit("request:declined", {
+        message: "Your join request was declined.",
+        data: { joinRequest }
+    });
+};
+
 const emitRequestDeleted = (ownerUserId, joinRequestId) => {
     if (!io) return;
     io.to(ownerUserId).emit("request:deleted", {
@@ -70,4 +78,4 @@ const emitSessionDeleted = (sessionId) => {
     });
 };
 
-module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted, emitRequestDeleted, emitSessionCreated, emitSessionUpdated, emitSessionDeleted };
+module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted, emitRequestDeclined, emitRequestDeleted, emitSessionCreated, emitSessionUpdated, emitSessionDeleted };

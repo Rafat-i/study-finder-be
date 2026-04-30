@@ -69,6 +69,10 @@ export class DashboardPageComponent {
           this.loadSentRequests();
         },
         () => {
+          this.showNotification('Your join request was declined.');
+          this.loadSentRequests();
+        },
+        () => {
           this.loadSessions();
         },
         () => {
