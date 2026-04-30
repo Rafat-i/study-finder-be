@@ -79,6 +79,9 @@ export class DashboardPageComponent {
           this.loadSessions();
           this.loadIncomingRequests();
           this.loadSentRequests();
+        },
+        () => {
+          this.loadIncomingRequests();
         }
       );
     }

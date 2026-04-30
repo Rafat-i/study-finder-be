@@ -1,6 +1,6 @@
 const JoinRequest = require("../models/JoinRequest");
 const StudySession = require("../models/StudySession");
-const { emitRequestReceived, emitRequestAccepted, emitSessionUpdated } = require("../socket");
+const { emitRequestReceived, emitRequestAccepted, emitSessionUpdated, emitRequestDeleted } = require("../socket");
 
 const createJoinRequest = async (req, res) => {
     try {
@@ -193,11 +193,16 @@ const deleteJoinRequest = async (req, res) => {
             ).populate("createdBy", "-password");
         }
 
+        const ownerUserId = String(joinRequest.sessionId.createdBy);
+        const joinRequestId = String(joinRequest._id);
+
         await joinRequest.deleteOne();
 
         if (updatedSession) {
             emitSessionUpdated(updatedSession);
         }
+
+        emitRequestDeleted(ownerUserId, joinRequestId);
 
         return res.json({ message: "Join request deleted successfully." });
     } catch (error) {

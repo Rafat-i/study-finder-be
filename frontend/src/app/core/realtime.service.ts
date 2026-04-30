@@ -12,7 +12,8 @@ export class RealtimeService {
     onRequestAccepted: () => void,
     onSessionCreated: () => void,
     onSessionUpdated: () => void,
-    onSessionDeleted: () => void
+    onSessionDeleted: () => void,
+    onRequestDeleted: () => void
   ): void {
     if (this.socket?.connected) return;
 
@@ -29,6 +30,7 @@ export class RealtimeService {
     this.socket.on('session:created', onSessionCreated);
     this.socket.on('session:updated', onSessionUpdated);
     this.socket.on('session:deleted', onSessionDeleted);
+    this.socket.on('request:deleted', onRequestDeleted);
   }
 
   disconnect(): void {
@@ -37,6 +39,7 @@ export class RealtimeService {
     this.socket?.off('session:created');
     this.socket?.off('session:updated');
     this.socket?.off('session:deleted');
+    this.socket?.off('request:deleted');
     this.socket?.disconnect();
   }
 }

@@ -40,6 +40,13 @@ const emitRequestAccepted = (requesterUserId, joinRequest) => {
     });
 };
 
+const emitRequestDeleted = (ownerUserId, joinRequestId) => {
+    if (!io) return;
+    io.to(ownerUserId).emit("request:deleted", {
+        data: { joinRequestId }
+    });
+};
+
 const emitSessionCreated = (session) => {
     if (!io) return;
     io.emit("session:created", {
@@ -63,4 +70,4 @@ const emitSessionDeleted = (sessionId) => {
     });
 };
 
-module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted, emitSessionCreated, emitSessionUpdated, emitSessionDeleted };
+module.exports = { initializeSocket, emitRequestReceived, emitRequestAccepted, emitRequestDeleted, emitSessionCreated, emitSessionUpdated, emitSessionDeleted };
