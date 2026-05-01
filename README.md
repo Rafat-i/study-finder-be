@@ -34,6 +34,8 @@ A full-stack web application that allows students to create and join study sessi
 - Real-time updates via WebSockets:
   - `request:received` — session owner is notified when someone requests to join
   - `request:accepted` — requester is notified when their request is accepted
+  - `request:declined` — requester is notified when their request is declined
+  - `request:deleted` — both owner and requester are notified when a request is dismissed
   - `session:created` — all users see new sessions in real time
   - `session:updated` — all users see spot count updates in real time
   - `session:deleted` — all users see session removals in real time
