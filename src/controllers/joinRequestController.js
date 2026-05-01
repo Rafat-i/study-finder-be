@@ -196,6 +196,7 @@ const deleteJoinRequest = async (req, res) => {
         }
 
         const ownerUserId = String(joinRequest.sessionId.createdBy);
+        const requesterUserId = String(joinRequest.userId);
         const joinRequestId = String(joinRequest._id);
 
         await joinRequest.deleteOne();
@@ -204,7 +205,7 @@ const deleteJoinRequest = async (req, res) => {
             emitSessionUpdated(updatedSession);
         }
 
-        emitRequestDeleted(ownerUserId, joinRequestId);
+        emitRequestDeleted(ownerUserId, requesterUserId, joinRequestId);
 
         return res.json({ message: "Join request deleted successfully." });
     } catch (error) {

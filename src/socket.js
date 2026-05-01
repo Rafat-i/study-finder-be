@@ -48,11 +48,10 @@ const emitRequestDeclined = (requesterUserId, joinRequest) => {
     });
 };
 
-const emitRequestDeleted = (ownerUserId, joinRequestId) => {
+const emitRequestDeleted = (ownerUserId, requesterUserId, joinRequestId) => {
     if (!io) return;
-    io.to(ownerUserId).emit("request:deleted", {
-        data: { joinRequestId }
-    });
+    io.to(ownerUserId).emit("request:deleted", { data: { joinRequestId } });
+    io.to(requesterUserId).emit("request:deleted", { data: { joinRequestId } });
 };
 
 const emitSessionCreated = (session) => {
