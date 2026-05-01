@@ -86,6 +86,8 @@ export class DashboardPageComponent {
         },
         () => {
           this.loadIncomingRequests();
+          this.loadSentRequests();
+          this.loadSessions();
         }
       );
     }
