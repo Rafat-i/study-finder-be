@@ -163,8 +163,8 @@ Create a `.env` file at the root of the project with the following variables:
 
 ```
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+MONGODB_URI=mongodb_connection_string
+JWT_SECRET=jwt_secret_key
 ```
 
 | Variable      | Description                              |
